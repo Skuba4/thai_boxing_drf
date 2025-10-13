@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    container_name: web
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: >
+      sh -c "python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000"
+
+  db:
+    image: postgres:18
+    container_name: db
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
