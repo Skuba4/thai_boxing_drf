@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split()
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split()
+CORS_ALLOWED_ORIGINS = True
 
 if DEBUG:
     LOGGING = {
