@@ -13,7 +13,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split()
 CORS_ALLOW_HEADERS = list(default_headers) + [
-    'x-ijt',  # 🔹 нестандартный заголовок (удалить в prod)
+    'x-ijt',  # 🔹 доп заголовок (удалить в prod)
 ]
 # CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split()
 
