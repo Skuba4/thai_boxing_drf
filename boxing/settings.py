@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
@@ -11,6 +12,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split()
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'x-ijt',  # 🔹 нестандартный заголовок (удалить в prod)
+]
 # CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split()
 
 if DEBUG:
