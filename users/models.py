@@ -3,17 +3,23 @@ from django.db import models
 
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True, verbose_name='Аватар')
-    bio = models.TextField(blank=True, null=True, verbose_name='О себе')
-    city = models.CharField(max_length=100, null=True, blank=True, verbose_name='Город')
-    club = models.CharField(max_length=100, null=True, blank=True, verbose_name='Клуб')
-    date_birth = models.DateField(blank=True, null=True, verbose_name="Дата рождения")
-    is_premium = models.BooleanField(default=True, verbose_name="Премиум-доступ")
-    premium_until = models.DateField(blank=True, null=True, verbose_name="Подписка до")
+    '''ПЕРЕОПРЕДЕЛЕННАЯ МОДЕЛЬ ПОЛЬЗОВАТЕЛЯ'''
+    email = models.EmailField(unique=True, verbose_name='Email')
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    first_name = models.CharField(blank=True, null=True, max_length=30, verbose_name='Имя')
+    last_name = models.CharField(blank=True, null=True, max_length=30, verbose_name='Фамилия')
+    club = models.CharField(blank=True, null=True, max_length=30, verbose_name='Клуб')
+    city = models.CharField(blank=True, null=True, max_length=50, verbose_name='Город')
+    photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True, null=True, verbose_name='Фото')
+
+    is_premium = models.BooleanField(default=True, verbose_name='Премиум-доступ')
+    premium_until = models.DateField(blank=True, null=True, verbose_name='Подписка до')
+
+    # вход по email
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.email

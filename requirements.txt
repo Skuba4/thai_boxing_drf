@@ -1,9 +1,8 @@
+Django==5.2.8
 django-cors-headers==4.9.0
 django-extensions==4.1
 djangorestframework_simplejwt==5.5.1
 drf-yasg==1.21.11
-pi==0.1.2
 pillow==11.3.0
-pip==25.2
 python-dotenv==1.1.1
 psycopg2-binary

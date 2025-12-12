@@ -1,25 +1,26 @@
-name: CD to VPS
+name: "deploy"
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
+
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd /projects/thai_boxing_drf
-            git pull origin main
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+
+      - name: Deploy to VPS
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          ssh -o StrictHostKeyChecking=no root@$HOST "
+            cd /projects/thai_boxing_drf/ &&
+            git pull &&
             docker compose up -d --build
+          "
