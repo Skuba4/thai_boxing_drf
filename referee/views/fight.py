@@ -90,8 +90,8 @@ class FightViewSet(ModelViewSet):
     serializer_class = FightSerializer
     http_method_names = ["post", "get", "patch", "delete"]
 
-    lookup_field = "uuid"
-    lookup_url_kwarg = "room_uuid"
+    lookup_field = "id"
+    lookup_url_kwarg = "fight_id"
 
     def get_permissions(self):
         if self.action in ["create", "partial_update", "destroy"]:
@@ -100,3 +100,6 @@ class FightViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Fight.objects.filter(room__uuid=self.kwargs["room_uuid"])
+
+    def perform_create(self, serializer):
+        serializer.save(room_id=self.kwargs["room_uuid"])

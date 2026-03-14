@@ -82,9 +82,6 @@ class BoxerRoom(models.Model):
 class Fight(models.Model):
     """
     Бой
-
-    ring.fights.all() - бои конкретного ринга
-    boxerroom.wins.all() - все бои, которые боксер выиграл
     """
 
     class Stage(models.TextChoices):
@@ -95,20 +92,20 @@ class Fight(models.Model):
         SEMIFINAL = "1/2", "1/2"
         FINAL = "final", "Финал"
 
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     number = models.PositiveIntegerField()
 
     ring = models.ForeignKey(
         "referee.Ring",
         on_delete=models.CASCADE,
         related_name="fights",
+        null=True,
+        blank=True,
     )
     stage = models.CharField(
         max_length=5,
         null=True,
         blank=True,
         choices=Stage,
-        default=None,
     )
     winner = models.ForeignKey(
         BoxerRoom,
@@ -117,18 +114,21 @@ class Fight(models.Model):
         null=True,
         blank=True,
     )
+    room = models.ForeignKey(
+        "referee.Room", on_delete=models.CASCADE, related_name="fights"
+    )
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["ring", "number"], name="unique_number"),
-        ]
-
-    @property
-    def room(self):
-        return self.ring.room
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(fields=["ring", "number"], name="unique_number"),
+    #     ]
 
 
 class FightSlot(models.Model):
+    """
+    Участники боя
+    """
+
     class Corner(models.TextChoices):
         BLUE = "blue", "Синий"
         RED = "red", "Красный"

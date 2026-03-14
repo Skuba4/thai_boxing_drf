@@ -65,7 +65,7 @@ urlpatterns = router.urls + [
         ),
     ),
     path(
-        "room/<uuid:room_uuid>/fight/<uuid:fight_uuid>/",
+        "room/<uuid:room_uuid>/fight/<int:fight_id>/",
         FightViewSet.as_view(
             {
                 "get": "retrieve",
