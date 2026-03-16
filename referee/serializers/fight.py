@@ -47,9 +47,10 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
 class FightSlotSerializer(serializers.ModelSerializer):
     """Участники боя"""
 
+    resolved_boxer = serializers.UUIDField(source="resolved_boxer.uuid", read_only=True)
+
     class Meta:
         model = FightSlot
-        read_only_fields = ("resolved_boxer",)
         fields = ("corner", "boxer", "source_fight", "resolved_boxer")
 
 
