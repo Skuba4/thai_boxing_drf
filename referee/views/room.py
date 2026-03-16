@@ -17,7 +17,7 @@ from referee.serializers import (
     RoomSerializer,
     RoomApplicationDecisionSerializers,
 )
-from referee.services.boxers import (
+from referee.services.boxers_room import (
     add_trainer_boxers_to_room,
     dell_trainer_boxers_to_room,
 )

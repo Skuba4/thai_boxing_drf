@@ -118,11 +118,6 @@ class Fight(models.Model):
         "referee.Room", on_delete=models.CASCADE, related_name="fights"
     )
 
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(fields=["ring", "number"], name="unique_number"),
-    #     ]
-
 
 class FightSlot(models.Model):
     """

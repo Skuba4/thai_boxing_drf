@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 from referee.models import Boxer, BoxerRoom, Room, Fight
 from referee.permissions import IsPremium, IsBoss
 from referee.serializers import BoxerSerializer, BoxerRoomSerializer, FightSerializer
-from referee.services.boxers import add_trainer_boxers_to_room
+from referee.services.boxers_room import add_trainer_boxers_to_room
 
 
 @extend_schema(tags=["Боксеры USER"])
@@ -100,6 +100,11 @@ class FightViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Fight.objects.filter(room__uuid=self.kwargs["room_uuid"])
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["room_id"] = self.kwargs["room_uuid"]
+        return context
 
     def perform_create(self, serializer):
         serializer.save(room_id=self.kwargs["room_uuid"])
