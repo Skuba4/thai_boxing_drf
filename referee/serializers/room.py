@@ -18,7 +18,7 @@ class RingSerializers(serializers.ModelSerializer):
     class Meta:
         model = Ring
         read_only_fields = ("name", "room")
-        fields = ("name", "room", "status", "description")
+        fields = ("id", "name", "room", "status", "description")
 
 
 class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
