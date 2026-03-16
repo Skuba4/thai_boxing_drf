@@ -61,7 +61,7 @@ class FightSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Fight
-        fields = ("ring", "number", "stage", "slots", "winner")
+        fields = ("id", "ring", "number", "stage", "slots", "winner")
 
     def validate(self, data):
         return validate_fight_payload(
