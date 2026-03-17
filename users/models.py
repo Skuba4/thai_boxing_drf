@@ -48,7 +48,6 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    middle_name = models.CharField(max_length=30, blank=True)
     email = models.EmailField(unique=True)
     photo = models.ImageField(upload_to="users/%Y/%m/%d/", blank=True)
 

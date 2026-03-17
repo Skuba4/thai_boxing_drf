@@ -6,10 +6,18 @@ from referee.models import Room, Ring, RoomApplication
 class RoomSerializer(serializers.ModelSerializer):
     """Комната"""
 
+    is_owner = serializers.SerializerMethodField()
+
     class Meta:
         model = Room
         read_only_fields = ("uuid",)
-        fields = ("uuid", "name", "description", "start_date", "status")
+        fields = ("uuid", "name", "description", "start_date", "status", "is_owner")
+
+    def get_is_owner(self, obj):
+        request = self.context.get("request")
+        if not request or not request.user.is_authenticated:
+            return False
+        return obj.boss_id == request.user.id
 
 
 class RingSerializers(serializers.ModelSerializer):

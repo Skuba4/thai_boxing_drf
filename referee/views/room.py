@@ -68,6 +68,27 @@ class RoomViewSet(ModelViewSet):
 
 
 @extend_schema(
+    tags=["Ring"],
+)
+@extend_schema_view(
+    list=extend_schema(summary="Список"),
+    retrieve=extend_schema(summary="Инфа"),
+    partial_update=extend_schema(summary="Изменить"),
+)
+class RingViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated, IsPremium]
+    queryset = Ring.objects.all()
+    serializer_class = RingSerializers
+    http_method_names = ["get", "patch"]
+
+    lookup_field = "name"
+    lookup_url_kwarg = "ring_name"
+
+    def get_queryset(self):
+        return Ring.objects.filter(room__uuid=self.kwargs["room_uuid"])
+
+
+@extend_schema(
     tags=["Кнопки"],
     summary="Участие в соревнованиях",
 )
@@ -123,24 +144,3 @@ class RoomApplicationDecisionViewSet(ModelViewSet):
                     add_trainer_boxers_to_room(room, trainer)
                 case _:
                     dell_trainer_boxers_to_room(room, trainer)
-
-
-@extend_schema(
-    tags=["Ring"],
-)
-@extend_schema_view(
-    list=extend_schema(summary="Список"),
-    retrieve=extend_schema(summary="Инфа"),
-    partial_update=extend_schema(summary="Изменить"),
-)
-class RingViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsPremium]
-    queryset = Ring.objects.all()
-    serializer_class = RingSerializers
-    http_method_names = ["get", "patch"]
-
-    lookup_field = "name"
-    lookup_url_kwarg = "ring_name"
-
-    def get_queryset(self):
-        return Ring.objects.filter(room__uuid=self.kwargs["room_uuid"])
