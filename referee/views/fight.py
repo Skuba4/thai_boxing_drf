@@ -7,7 +7,12 @@ from rest_framework.viewsets import ModelViewSet
 
 from referee.models import Boxer, BoxerRoom, Room, Fight
 from referee.permissions import IsPremium, IsBoss
-from referee.serializers import BoxerSerializer, BoxerRoomSerializer, FightSerializer
+from referee.serializers import (
+    BoxerSerializer,
+    BoxerRoomSerializer,
+    FightSerializer,
+    EmptySerializer,
+)
 from referee.services.boxers_room import add_trainer_boxers_to_room
 
 
@@ -57,6 +62,11 @@ class BoxerRoomViewSet(ModelViewSet):
 
     def get_queryset(self):
         return BoxerRoom.objects.filter(room__uuid=self.kwargs["room_uuid"])
+
+    def get_serializer_class(self):
+        if self.action == "sync":
+            return EmptySerializer
+        return BoxerRoomSerializer
 
     @extend_schema(
         summary="Синхронизировать личный список",

@@ -44,6 +44,10 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
         )
 
 
+class EmptySerializer(serializers.Serializer):
+    pass
+
+
 class FightSlotSerializer(serializers.ModelSerializer):
     """Участники боя"""
 
