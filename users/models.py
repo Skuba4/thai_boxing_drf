@@ -63,11 +63,8 @@ class User(AbstractUser):
 
     def __str__(self):
         first = f"{self.first_name[0]}." if self.first_name else ""
-        middle = f"{self.middle_name[0]}." if self.middle_name else ""
 
-        return (
-            f"{self.last_name} {first}{middle} ({self.email}, {self.club}-{self.city})"
-        )
+        return f"{self.last_name} {first} ({self.email}, {self.club}-{self.city})"
 
 
 class PremiumApplication(models.Model):

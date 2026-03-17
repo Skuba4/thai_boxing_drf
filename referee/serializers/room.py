@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from referee.models import Room, Ring, RoomApplication
@@ -13,6 +14,7 @@ class RoomSerializer(serializers.ModelSerializer):
         read_only_fields = ("uuid",)
         fields = ("uuid", "name", "description", "start_date", "status", "is_owner")
 
+    @extend_schema_field(bool)
     def get_is_owner(self, obj):
         request = self.context.get("request")
         if not request or not request.user.is_authenticated:
