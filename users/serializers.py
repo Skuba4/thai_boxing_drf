@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from users.models import PremiumApplication
+
 User = get_user_model()
 
 
@@ -24,8 +26,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
         )
 
 
+class PremiumApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PremiumApplication
+        read_only_fields = ("status",)
+        fields = ("status",)
+
+
 class UserInfoSerializer(serializers.ModelSerializer):
-    is_premium = serializers.SerializerMethodField()
+    premium = PremiumApplicationSerializer(read_only=True, source="premium_application")
 
     class Meta:
         model = User
@@ -37,9 +46,5 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "email",
             "city",
             "club",
-            "is_premium",
+            "premium",
         )
-
-    def get_is_premium(self, obj):
-        application = getattr(obj, "premium_application", False)
-        return application and application.status == "Y"
