@@ -36,6 +36,10 @@ class RoomSerializer(serializers.ModelSerializer):
             return False
         return obj.boss_id == request.user.id
 
+    def create(self, validated_data):
+        validated_data.pop("rings_count", None)
+        return super().create(validated_data)
+
 
 class RingSerializer(serializers.ModelSerializer):
     """Ринг"""
