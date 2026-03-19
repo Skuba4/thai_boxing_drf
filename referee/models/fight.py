@@ -29,7 +29,7 @@ class Boxer(models.Model):
     birth_date = models.DateField()
     sex = models.CharField(max_length=1, choices=Sex)
     rank = models.CharField(max_length=1, choices=Rank)
-    weight = models.DecimalField(max_digits=5, decimal_places=1)
+    weight = models.DecimalField(max_digits=4, decimal_places=1)
 
     trainer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="boxers")
 
@@ -61,7 +61,7 @@ class BoxerRoom(models.Model):
     age = models.PositiveIntegerField()
     sex = models.CharField(max_length=1, choices=Sex)
     rank = models.CharField(max_length=1, choices=Rank)
-    weight = models.DecimalField(max_digits=5, decimal_places=1)
+    weight = models.DecimalField(max_digits=4, decimal_places=1)
 
     weight_category = models.CharField(max_length=20)
 

@@ -21,9 +21,7 @@ class Room(models.Model):
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=30)
-    description = models.TextField(
-        max_length=50, blank=True
-    )
+    description = models.TextField(max_length=50, blank=True)
     start_date = models.DateField()
     status = models.CharField(max_length=1, choices=Status, default=Status.WAIT)
 
