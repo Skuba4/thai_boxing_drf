@@ -140,3 +140,10 @@ class RoomApplicationDecisionViewSet(ModelViewSet):
                     add_trainer_boxers_to_room(room, trainer)
                 case _:
                     dell_trainer_boxers_to_room(room, trainer)
+
+    def perform_destroy(self, instance):
+        room = instance.room
+        trainer = instance.user
+
+        dell_trainer_boxers_to_room(room, trainer)
+        instance.delete()
