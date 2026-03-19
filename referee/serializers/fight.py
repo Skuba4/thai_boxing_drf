@@ -31,7 +31,7 @@ class BoxerSerializer(serializers.ModelSerializer):
 class BoxerRoomSerializer(serializers.ModelSerializer):
     """Боксеры конкретной комнаты"""
 
-    trainer = UserInfoSerializer()
+    trainer = UserInfoSerializer(read_only=True)
 
     class Meta:
         model = BoxerRoom

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from referee.models import Room, Ring, RoomApplication
+from users.serializers import UserInfoSerializer
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -53,7 +54,13 @@ class RingSerializer(serializers.ModelSerializer):
 class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
     """Заявка на участие в соревнованиях"""
 
+    user = UserInfoSerializer(read_only=True)
+
     class Meta:
         model = RoomApplication
-        read_only_fields = ("uuid",)
-        fields = ("uuid", "status")
+        read_only_fields = ("uuid", "user")
+        fields = (
+            "uuid",
+            "user",
+            "status",
+        )
