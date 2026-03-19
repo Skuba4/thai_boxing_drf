@@ -69,13 +69,12 @@ class Ring(models.Model):
     """
 
     class Status(models.TextChoices):
-        WAIT = "0", "Подготовка"
-        YES = "Y", "Активно"
+        YES = "Y", "Используется"
         NO = "N", "Не используется"
 
     name = models.CharField(max_length=1)
     description = models.CharField(max_length=100, blank=True)
-    status = models.CharField(max_length=1, choices=Status, default=Status.WAIT)
+    status = models.CharField(max_length=1, choices=Status, default=Status.NO)
 
     room = models.ForeignKey(
         "referee.Room", on_delete=models.CASCADE, related_name="rings"

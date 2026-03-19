@@ -13,7 +13,7 @@ from rest_framework.viewsets import ModelViewSet
 from referee.models import Room, RoomApplication, Ring
 from referee.permissions import IsPremium
 from referee.serializers import (
-    RingSerializers,
+    RingSerializer,
     RoomSerializer,
     RoomApplicationDecisionSerializers,
 )
@@ -21,6 +21,7 @@ from referee.services.boxers_room import (
     add_trainer_boxers_to_room,
     dell_trainer_boxers_to_room,
 )
+from referee.services.room import ring_creates
 
 User = get_user_model()
 
@@ -50,13 +51,8 @@ class RoomViewSet(ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         room = serializer.save(boss=user)
-        names = ["A", "B", "C", "D", "E"]
-        rings = [Ring(room=room, name=names[i]) for i in range(5)]
-
-        Ring.objects.bulk_create(rings)
-
-        with transaction.atomic():
-            add_trainer_boxers_to_room(room, user)
+        count = serializer.validated_data.get("rings_count")
+        ring_creates(user, room, count)
 
     @extend_schema(
         summary="Комнаты всех пользователей",
@@ -78,7 +74,7 @@ class RoomViewSet(ModelViewSet):
 class RingViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsPremium]
     queryset = Ring.objects.all()
-    serializer_class = RingSerializers
+    serializer_class = RingSerializer
     http_method_names = ["get", "patch"]
 
     lookup_field = "name"

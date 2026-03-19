@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from referee.models import Room, Ring, RoomApplication
 
@@ -8,11 +9,25 @@ class RoomSerializer(serializers.ModelSerializer):
     """Комната"""
 
     is_owner = serializers.SerializerMethodField()
+    rings_count = serializers.IntegerField(write_only=True, default=1)
 
     class Meta:
         model = Room
         read_only_fields = ("uuid",)
-        fields = ("uuid", "name", "description", "start_date", "status", "is_owner")
+        fields = (
+            "uuid",
+            "name",
+            "description",
+            "rings_count",
+            "start_date",
+            "status",
+            "is_owner",
+        )
+
+    def validate_rings_count(self, value):
+        if 1 <= value <= 5:
+            return value
+        raise ValidationError("Число активных рингов от 1 до 5 включительно")
 
     @extend_schema_field(bool)
     def get_is_owner(self, obj):
@@ -22,13 +37,13 @@ class RoomSerializer(serializers.ModelSerializer):
         return obj.boss_id == request.user.id
 
 
-class RingSerializers(serializers.ModelSerializer):
+class RingSerializer(serializers.ModelSerializer):
     """Ринг"""
 
     class Meta:
         model = Ring
         read_only_fields = ("name", "room")
-        fields = ("id", "name", "room", "status", "description")
+        fields = ("name", "description", "room", "status")
 
 
 class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
