@@ -4,6 +4,7 @@ from rest_framework import serializers
 from referee.models import Boxer, BoxerRoom, Fight, FightSlot
 from referee.services.boxers_room import validate_min_boxer_age
 from referee.services.fights import validate_fight_payload
+from users.serializers import UserInfoSerializer
 
 
 class BoxerSerializer(serializers.ModelSerializer):
@@ -29,6 +30,8 @@ class BoxerSerializer(serializers.ModelSerializer):
 
 class BoxerRoomSerializer(serializers.ModelSerializer):
     """Боксеры конкретной комнаты"""
+
+    trainer = UserInfoSerializer()
 
     class Meta:
         model = BoxerRoom
