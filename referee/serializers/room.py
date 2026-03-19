@@ -10,6 +10,7 @@ class RoomSerializer(serializers.ModelSerializer):
     """Комната"""
 
     is_owner = serializers.SerializerMethodField()
+    my_application_status = serializers.SerializerMethodField()
     rings_count = serializers.IntegerField(write_only=True, default=1)
 
     class Meta:
@@ -23,6 +24,7 @@ class RoomSerializer(serializers.ModelSerializer):
             "start_date",
             "status",
             "is_owner",
+            "my_application_status",
         )
 
     def validate_rings_count(self, value):
@@ -36,6 +38,18 @@ class RoomSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
         return obj.boss_id == request.user.id
+
+    def get_my_application_status(self, obj):
+        request = self.context.get("request")
+        if not request or not request.user.is_authenticated:
+            return None
+
+        application = RoomApplication.objects.filter(
+            room=obj,
+            user=request.user,
+        ).first()
+
+        return application.status if application else None
 
     def create(self, validated_data):
         validated_data.pop("rings_count", None)
@@ -58,9 +72,10 @@ class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = RoomApplication
-        read_only_fields = ("uuid", "user")
+        read_only_fields = ("uuid", "user", "room")
         fields = (
             "uuid",
             "user",
+            "room",
             "status",
         )
