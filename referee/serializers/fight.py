@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from referee.models import Boxer, BoxerRoom, Fight, FightSlot
+from referee.services.boxers_room import validate_min_boxer_age
 from referee.services.fights import validate_fight_payload
 
 
@@ -21,6 +22,9 @@ class BoxerSerializer(serializers.ModelSerializer):
             "rank",
             "weight",
         )
+
+    def validate_birth_date(self, value):
+        return validate_min_boxer_age(value)
 
 
 class BoxerRoomSerializer(serializers.ModelSerializer):
@@ -42,6 +46,9 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
             "weight_category",
             "trainer",
         )
+
+    def validate_birth_date(self, value):
+        return validate_min_boxer_age(value)
 
 
 class EmptySerializer(serializers.Serializer):

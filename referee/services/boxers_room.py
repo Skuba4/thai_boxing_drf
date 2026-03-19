@@ -1,5 +1,7 @@
 from datetime import date
 
+from rest_framework.exceptions import ValidationError
+
 from referee.models import Boxer, BoxerRoom
 
 
@@ -45,3 +47,13 @@ def add_trainer_boxers_to_room(room, trainer):
         )
 
     BoxerRoom.objects.bulk_create(room_boxers)
+
+
+def validate_min_boxer_age(value):
+    today = date.today()
+    age = (
+        today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+    )
+    if age < 5:
+        raise ValidationError("Минимальный возраст 5 лет")
+    return value
