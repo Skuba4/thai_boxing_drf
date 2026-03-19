@@ -20,8 +20,10 @@ class Room(models.Model):
         NO = "N", "Завершено"
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=50)
-    description = models.TextField()
+    name = models.CharField(max_length=30)
+    description = models.TextField(
+        max_length=50, blank=True
+    )
     start_date = models.DateField()
     status = models.CharField(max_length=1, choices=Status, default=Status.WAIT)
 
@@ -73,7 +75,7 @@ class Ring(models.Model):
         NO = "N", "Не используется"
 
     name = models.CharField(max_length=1)
-    description = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=20, blank=True)
     status = models.CharField(max_length=1, choices=Status, default=Status.NO)
 
     room = models.ForeignKey(
