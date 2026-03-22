@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from referee.models import Boxer, BoxerRoom, Fight, FightSlot, GroupBoxer
+from referee.models import Boxer, BoxerRoom, Fight, FightSlot, GroupBoxer, Group
 from referee.serializers.room import GroupSerializer
 from referee.services.boxers_room import validate_min_boxer_age
 from referee.services.fights import validate_fight_payload
@@ -57,15 +57,23 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
 
 
 class GroupBoxerSerializer(serializers.ModelSerializer):
-    """Боксеры группы"""
+    boxer = BoxerRoomSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
 
-    boxer = BoxerRoomSerializer()
-    group = GroupSerializer()
+    boxer_id = serializers.PrimaryKeyRelatedField(
+        queryset=BoxerRoom.objects.all(),
+        source="boxer",
+        write_only=True,
+    )
+    group_id = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(),
+        source="group",
+        write_only=True,
+    )
 
     class Meta:
         model = GroupBoxer
-        read_only_fields = ("id",)
-        fields = ("id", "boxer", "group")
+        fields = ("id", "boxer", "group", "boxer_id", "group_id")
 
 
 class EmptySerializer(serializers.Serializer):
