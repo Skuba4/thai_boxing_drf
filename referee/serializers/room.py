@@ -66,14 +66,16 @@ class RingSerializer(serializers.ModelSerializer):
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    """Группа ринга"""
-
-    ring = RingSerializer()
+    ring = RingSerializer(read_only=True)
+    ring_id = serializers.PrimaryKeyRelatedField(
+        queryset=Ring.objects.all(),
+        source="ring",
+        write_only=True,
+    )
 
     class Meta:
         model = Group
-        read_only_fields = ("id",)
-        fields = ("id", "room", "name", "ring")
+        fields = ("id", "room", "name", "ring", "ring_id")
 
 
 class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
