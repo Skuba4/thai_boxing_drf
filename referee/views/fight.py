@@ -81,16 +81,16 @@ class BoxerRoomViewSet(ModelViewSet):
         detail=False,
         methods=["post"],
     )
+    @transaction.atomic
     def sync(self, request, *args, **kwargs):
-        with transaction.atomic():
-            room = Room.objects.get(uuid=self.kwargs["room_uuid"])
-            user = request.user
+        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
+        user = request.user
 
-            add_trainer_boxers_to_room(room, user)
+        add_trainer_boxers_to_room(room, user)
 
-            obj = BoxerRoom.objects.filter(room=self.kwargs["room_uuid"], trainer=user)
-            serializer = self.get_serializer(obj, many=True)
-            return Response(serializer.data)
+        obj = BoxerRoom.objects.filter(room=self.kwargs["room_uuid"], trainer=user)
+        serializer = self.get_serializer(obj, many=True)
+        return Response(serializer.data)
 
 
 @extend_schema(tags=["Бои ROOM"])
