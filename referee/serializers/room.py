@@ -68,7 +68,7 @@ class RingSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     """Группа ринга"""
 
-    ring = RingSerializer(read_only=True)
+    ring = RingSerializer()
 
     class Meta:
         model = Group
