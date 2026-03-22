@@ -64,6 +64,7 @@ class BoxerRoom(models.Model):
     weight = models.DecimalField(max_digits=4, decimal_places=1)
 
     weight_category = models.CharField(max_length=20)
+    is_available = models.BooleanField(default=True)
 
     trainer = models.ForeignKey(
         User,
