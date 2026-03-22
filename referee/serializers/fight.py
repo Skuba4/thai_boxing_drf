@@ -59,8 +59,8 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
 class GroupBoxerSerializer(serializers.ModelSerializer):
     """Боксеры группы"""
 
-    boxer = BoxerRoomSerializer(read_only=True)
-    group = GroupSerializer(read_only=True)
+    boxer = BoxerRoomSerializer()
+    group = GroupSerializer()
 
     class Meta:
         model = GroupBoxer
