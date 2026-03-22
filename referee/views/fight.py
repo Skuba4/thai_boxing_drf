@@ -68,6 +68,12 @@ class BoxerRoomViewSet(ModelViewSet):
             return EmptySerializer
         return BoxerRoomSerializer
 
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        fight_ids = list(instance.fight_slots.values_list("fight_id", flat=True))
+        Fight.objects.filter(id__in=fight_ids).delete()
+        instance.delete()
+
     @extend_schema(
         summary="Синхронизировать личный список",
     )
