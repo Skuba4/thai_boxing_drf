@@ -109,7 +109,7 @@ class Fight(models.Model):
     )
     winner = models.ForeignKey(
         BoxerRoom,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="wins",
         null=True,
         blank=True,
@@ -136,14 +136,14 @@ class FightSlot(models.Model):
     corner = models.CharField(max_length=4, choices=Corner)
     boxer = models.ForeignKey(
         BoxerRoom,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="fight_slots",
     )
     source_fight = models.ForeignKey(
         Fight,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="target_slots",
