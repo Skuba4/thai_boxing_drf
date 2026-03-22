@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+from referee.models import Group
 from users.models import User
 
 
@@ -77,6 +78,15 @@ class BoxerRoom(models.Model):
     )
     source_boxer = models.ForeignKey(
         Boxer, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+
+class GroupBoxer(models.Model):
+    boxer = models.ForeignKey(
+        "referee.BoxerRoom", on_delete=models.CASCADE, related_name="boxers_group"
+    )
+    group = models.ForeignKey(
+        "referee.Group", on_delete=models.CASCADE, related_name="groups"
     )
 
 

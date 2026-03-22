@@ -74,4 +74,42 @@ urlpatterns = router.urls + [
             }
         ),
     ),
+    path(
+        "room/<uuid:room_uuid>/groups/",
+        GroupViewSet.as_view(
+            {
+                "post": "create",
+                "get": "list",
+            }
+        ),
+    ),
+    path(
+        "room/<uuid:room_uuid>/group/<int:group_id>/",
+        GroupViewSet.as_view(
+            {
+                "get": "retrieve",
+                "patch": "partial_update",
+                "delete": "destroy",
+            }
+        ),
+    ),
+    path(
+        "group/<int:group_id>/boxers/",
+        GroupBoxerViewSet.as_view(
+            {
+                "post": "create",
+                "get": "list",
+            }
+        ),
+    ),
+    path(
+        "group/<int:group_id>/boxer/<int:group_boxer_id>/",
+        GroupBoxerViewSet.as_view(
+            {
+                "get": "retrieve",
+                "patch": "partial_update",
+                "delete": "destroy",
+            }
+        ),
+    ),
 ]

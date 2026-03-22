@@ -2,7 +2,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from referee.models import Room, Ring, RoomApplication
+from referee.models import Room, Ring, RoomApplication, Group
 from users.serializers import UserInfoSerializer
 
 
@@ -63,6 +63,17 @@ class RingSerializer(serializers.ModelSerializer):
         model = Ring
         read_only_fields = ("name", "room")
         fields = ("name", "description", "room", "status")
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    """Группа ринга"""
+
+    ring = RingSerializer(read_only=True)
+
+    class Meta:
+        model = Group
+        read_only_fields = ("id",)
+        fields = ("id", "room", "name", "ring")
 
 
 class RoomApplicationDecisionSerializers(serializers.ModelSerializer):

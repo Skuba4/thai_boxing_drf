@@ -5,25 +5,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from referee.models import Boxer, BoxerRoom, Room, Fight
+from referee.models import Boxer, BoxerRoom, Room, Fight, GroupBoxer
 from referee.permissions import IsPremium, IsBoss
 from referee.serializers import (
     BoxerSerializer,
     BoxerRoomSerializer,
     FightSerializer,
     EmptySerializer,
+    GroupBoxerSerializer,
 )
 from referee.services.boxers_room import add_trainer_boxers_to_room
 
 
 @extend_schema(tags=["Боксеры USER"])
-@extend_schema_view(
-    list=extend_schema(summary="Список"),
-    create=extend_schema(summary="Создать"),
-    retrieve=extend_schema(summary="Инфа (UUID)"),
-    partial_update=extend_schema(summary="Изменить (UUID)"),
-    destroy=extend_schema(summary="Удалить (UUID)"),
-)
 class BoxerViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsPremium]
     queryset = Boxer.objects.all()
@@ -41,12 +35,6 @@ class BoxerViewSet(ModelViewSet):
 
 
 @extend_schema(tags=["Боксеры ROOM"])
-@extend_schema_view(
-    list=extend_schema(summary="Список"),
-    retrieve=extend_schema(summary="Инфа (UUID)"),
-    partial_update=extend_schema(summary="Изменить (UUID)"),
-    destroy=extend_schema(summary="Удалить (UUID)"),
-)
 class BoxerRoomViewSet(ModelViewSet):
     queryset = BoxerRoom.objects.all()
     serializer_class = BoxerRoomSerializer
@@ -93,14 +81,25 @@ class BoxerRoomViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
+@extend_schema(tags=["Боксеры группы"])
+class GroupBoxerViewSet(ModelViewSet):
+    queryset = GroupBoxer.objects.all()
+    serializer_class = GroupBoxerSerializer
+    http_method_names = ["post", "get", "patch", "delete"]
+
+    lookup_field = "id"
+    lookup_url_kwarg = "group_boxer_id"
+
+    def get_queryset(self):
+        return GroupBoxer.objects.filter(group_id=self.kwargs["group_id"])
+
+    def get_permissions(self):
+        if self.action in ["create", "partial_update", "destroy"]:
+            return [IsPremium(), IsBoss()]
+        return [IsAuthenticated()]
+
+
 @extend_schema(tags=["Бои ROOM"])
-@extend_schema_view(
-    list=extend_schema(summary="Список"),
-    create=extend_schema(summary="Создать"),
-    retrieve=extend_schema(summary="Инфа (UUID)"),
-    partial_update=extend_schema(summary="Изменить (UUID)"),
-    destroy=extend_schema(summary="Удалить (UUID)"),
-)
 class FightViewSet(ModelViewSet):
     queryset = Fight.objects.all()
     serializer_class = FightSerializer

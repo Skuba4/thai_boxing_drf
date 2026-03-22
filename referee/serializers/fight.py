@@ -1,7 +1,8 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from referee.models import Boxer, BoxerRoom, Fight, FightSlot
+from referee.models import Boxer, BoxerRoom, Fight, FightSlot, GroupBoxer
+from referee.serializers import GroupSerializer
 from referee.services.boxers_room import validate_min_boxer_age
 from referee.services.fights import validate_fight_payload
 from users.serializers import UserInfoSerializer
@@ -53,6 +54,18 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
 
     def validate_birth_date(self, value):
         return validate_min_boxer_age(value)
+
+
+class GroupBoxerSerializer(serializers.ModelSerializer):
+    """Боксеры группы"""
+
+    boxer = BoxerRoomSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
+
+    class Meta:
+        model = GroupBoxer
+        read_only_fields = ("id",)
+        fields = ("id", "boxer", "group")
 
 
 class EmptySerializer(serializers.Serializer):

@@ -31,6 +31,36 @@ class Room(models.Model):
     )
 
 
+class Ring(models.Model):
+    """
+    Ринг
+
+    room.rings.all() - ринги конкретной комнаты
+    """
+
+    class Status(models.TextChoices):
+        YES = "Y", "Используется"
+        NO = "N", "Не используется"
+
+    name = models.CharField(max_length=1)
+    description = models.CharField(max_length=20, blank=True)
+    status = models.CharField(max_length=1, choices=Status, default=Status.NO)
+
+    room = models.ForeignKey(
+        "referee.Room", on_delete=models.CASCADE, related_name="rings"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["room", "name"], name="unique_ring_name_per_room"
+            ),
+            models.CheckConstraint(
+                condition=Q(name__in=["A", "B", "C", "D", "E"]), name="ring_name_valid"
+            ),
+        ]
+
+
 class RoomApplication(models.Model):
     """
     Заявка на участие в соревнованиях
@@ -61,31 +91,11 @@ class RoomApplication(models.Model):
         ]
 
 
-class Ring(models.Model):
-    """
-    Ринг
-
-    room.rings.all() - ринги конкретной комнаты
-    """
-
-    class Status(models.TextChoices):
-        YES = "Y", "Используется"
-        NO = "N", "Не используется"
-
-    name = models.CharField(max_length=1)
-    description = models.CharField(max_length=20, blank=True)
-    status = models.CharField(max_length=1, choices=Status, default=Status.NO)
-
+class Group(models.Model):
+    name = models.CharField(max_length=20, blank=False, null=True)
     room = models.ForeignKey(
-        "referee.Room", on_delete=models.CASCADE, related_name="rings"
+        "referee.Room", on_delete=models.CASCADE, related_name="rooms_group"
     )
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["room", "name"], name="unique_ring_name_per_room"
-            ),
-            models.CheckConstraint(
-                condition=Q(name__in=["A", "B", "C", "D", "E"]), name="ring_name_valid"
-            ),
-        ]
+    ring = models.ForeignKey(
+        "referee.Ring", on_delete=models.CASCADE, related_name="rings_group"
+    )

@@ -10,12 +10,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from referee.models import Room, RoomApplication, Ring
-from referee.permissions import IsPremium
+from referee.models import Room, RoomApplication, Ring, Group
+from referee.permissions import IsPremium, IsBoss
 from referee.serializers import (
     RingSerializer,
     RoomSerializer,
     RoomApplicationDecisionSerializers,
+    GroupSerializer,
 )
 from referee.services.boxers_room import (
     add_trainer_boxers_to_room,
@@ -27,14 +28,7 @@ User = get_user_model()
 
 
 @extend_schema(
-    tags=["Room"],
-)
-@extend_schema_view(
-    list=extend_schema(summary="Список"),
-    create=extend_schema(summary="Создать"),
-    retrieve=extend_schema(summary="Инфа (UUID)"),
-    partial_update=extend_schema(summary="Изменить (UUID)"),
-    destroy=extend_schema(summary="Удалить (UUID)"),
+    tags=["Комнаты соревнований"],
 )
 class RoomViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsPremium]
@@ -64,15 +58,9 @@ class RoomViewSet(ModelViewSet):
 
 
 @extend_schema(
-    tags=["Ring"],
-)
-@extend_schema_view(
-    list=extend_schema(summary="Список"),
-    retrieve=extend_schema(summary="Инфа"),
-    partial_update=extend_schema(summary="Изменить"),
+    tags=["Ринги"],
 )
 class RingViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated, IsPremium]
     queryset = Ring.objects.all()
     serializer_class = RingSerializer
     http_method_names = ["get", "patch"]
@@ -82,6 +70,32 @@ class RingViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Ring.objects.filter(room__uuid=self.kwargs["room_uuid"])
+
+    def get_permissions(self):
+        if self.action in ["create", "partial_update", "destroy"]:
+            return [IsPremium(), IsBoss()]
+        return [IsAuthenticated()]
+
+
+@extend_schema(
+    tags=["Группы рингов"],
+)
+class GroupViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated, IsPremium]
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    http_method_names = ["get", "post", "patch", "delete"]
+
+    lookup_field = "id"
+    lookup_url_kwarg = "group_id"
+
+    def get_queryset(self):
+        return Group.objects.filter(room__uuid=self.kwargs["room_uuid"])
+
+    def get_permissions(self):
+        if self.action in ["create", "partial_update", "destroy"]:
+            return [IsPremium(), IsBoss()]
+        return [IsAuthenticated()]
 
 
 @extend_schema(
@@ -107,13 +121,7 @@ class RoomApplicationView(APIView):
 
 
 @extend_schema(
-    tags=["Решение по заявкам в ROOM"],
-)
-@extend_schema_view(
-    list=extend_schema(summary="Список"),
-    retrieve=extend_schema(summary="Инфа (UUID)"),
-    partial_update=extend_schema(summary="Изменить (UUID)"),
-    destroy=extend_schema(summary="Удалить (UUID)"),
+    tags=["Решения по заявкам в ROOM"],
 )
 class RoomApplicationDecisionViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsPremium]
@@ -122,7 +130,7 @@ class RoomApplicationDecisionViewSet(ModelViewSet):
     http_method_names = ["get", "patch", "delete"]
 
     lookup_field = "uuid"
-    lookup_url_kwarg = "room_uuid"
+    lookup_url_kwarg = "application_uuid"
 
     def get_queryset(self):
         return RoomApplication.objects.filter(room__boss=self.request.user)
