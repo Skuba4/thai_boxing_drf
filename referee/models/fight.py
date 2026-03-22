@@ -2,7 +2,6 @@ import uuid
 
 from django.db import models
 
-from referee.models import Group
 from users.models import User
 
 

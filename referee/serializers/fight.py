@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from referee.models import Boxer, BoxerRoom, Fight, FightSlot, GroupBoxer
-from referee.serializers import GroupSerializer
+from referee.serializers.room import GroupSerializer
 from referee.services.boxers_room import validate_min_boxer_age
 from referee.services.fights import validate_fight_payload
 from users.serializers import UserInfoSerializer
