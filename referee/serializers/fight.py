@@ -47,6 +47,7 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
             "rank",
             "weight",
             "weight_category",
+            "is_available",
             "trainer",
         )
 
