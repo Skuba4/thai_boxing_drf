@@ -72,6 +72,8 @@ class GroupSerializer(serializers.ModelSerializer):
         queryset=Ring.objects.all(),
         source="ring",
         write_only=True,
+        required=False,
+        allow_null=True,
     )
     boxer_ids = serializers.PrimaryKeyRelatedField(
         queryset=BoxerRoom.objects.all(),
