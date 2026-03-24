@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from referee.models import Room, Ring, RoomApplication, Group, GroupBoxer, BoxerRoom
-from referee.serializers import GroupBoxerSerializer
+from referee.serializers.fight import GroupBoxerSerializer
 from users.serializers import UserInfoSerializer
 
 
