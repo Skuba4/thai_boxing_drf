@@ -22,6 +22,24 @@ class RegistrationView(CreateAPIView):
     serializer_class = RegistrationSerializer
 
 
+@extend_schema_view(
+    retrieve=extend_schema(summary="Данные пользователя"),
+    partial_update=extend_schema(summary="Обновление"),
+)
+class UserInfoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = UserInfoSerializer
+
+    http_method_names = [
+        "get",
+        "patch",
+    ]
+
+    def get_object(self):
+        return self.request.user
+
+
 @extend_schema(
     tags=["Кнопки"],
     summary="Премиум доступ",
@@ -40,21 +58,3 @@ class PremiumApplicationView(APIView):
             {"message": "Заявка уже есть", "status": obj.status},
             status=status.HTTP_200_OK,
         )
-
-
-@extend_schema_view(
-    retrieve=extend_schema(summary="Данные пользователя"),
-    partial_update=extend_schema(summary="Обновление"),
-)
-class UserInfoViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    queryset = User.objects.all()
-    serializer_class = UserInfoSerializer
-
-    http_method_names = [
-        "get",
-        "patch",
-    ]
-
-    def get_object(self):
-        return self.request.user

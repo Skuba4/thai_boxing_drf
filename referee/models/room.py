@@ -61,6 +61,20 @@ class Ring(models.Model):
         ]
 
 
+class Group(models.Model):
+    name = models.CharField(max_length=20)
+    room = models.ForeignKey(
+        "referee.Room", on_delete=models.CASCADE, related_name="rooms_group"
+    )
+    ring = models.ForeignKey(
+        "referee.Ring",
+        on_delete=models.CASCADE,
+        related_name="rings_group",
+        blank=True,
+        null=True,
+    )
+
+
 class RoomApplication(models.Model):
     """
     Заявка на участие в соревнованиях
@@ -89,13 +103,3 @@ class RoomApplication(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["room", "user"], name="uniq_room_user")
         ]
-
-
-class Group(models.Model):
-    name = models.CharField(max_length=20, blank=False, null=True)
-    room = models.ForeignKey(
-        "referee.Room", on_delete=models.CASCADE, related_name="rooms_group"
-    )
-    ring = models.ForeignKey(
-        "referee.Ring", on_delete=models.CASCADE, related_name="rings_group"
-    )

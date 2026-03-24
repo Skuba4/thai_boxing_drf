@@ -1,8 +1,9 @@
+from django.db import transaction
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from referee.models import Room, Ring, RoomApplication, Group
+from referee.models import Room, Ring, RoomApplication, Group, GroupBoxer, BoxerRoom
 from users.serializers import UserInfoSerializer
 
 
@@ -72,10 +73,26 @@ class GroupSerializer(serializers.ModelSerializer):
         source="ring",
         write_only=True,
     )
+    boxer_ids = serializers.PrimaryKeyRelatedField(
+        queryset=BoxerRoom.objects.all(),
+        many=True,
+        write_only=True,
+    )
 
     class Meta:
         model = Group
-        fields = ("id", "room", "name", "ring", "ring_id")
+        fields = ("id", "room", "name", "ring", "ring_id", "boxer_ids")
+
+    @transaction.atomic
+    def create(self, validated_data):
+        boxers = validated_data.pop("boxer_ids", [])
+        group = Group.objects.create(**validated_data)
+
+        GroupBoxer.objects.bulk_create(
+            [GroupBoxer(group=group, boxer=boxer) for boxer in boxers]
+        )
+
+        return group
 
 
 class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
