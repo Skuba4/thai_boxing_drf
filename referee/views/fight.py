@@ -13,6 +13,7 @@ from referee.serializers import (
     FightSerializer,
     EmptySerializer,
     GroupBoxerSerializer,
+    GroupBoxerBulkMoveSerializer,
 )
 from referee.services.boxers_room import add_trainer_boxers_to_room
 
@@ -97,6 +98,22 @@ class GroupBoxerViewSet(ModelViewSet):
         if self.action in ["create", "partial_update", "destroy"]:
             return [IsPremium(), IsBoss()]
         return [IsAuthenticated()]
+
+    @action(detail=False, methods=["patch"])
+    @transaction.atomic
+    def bulk_move(self, request, *args, **kwargs):
+        serializer = GroupBoxerBulkMoveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        target_group = serializer.validated_data["target_group"]
+        group_boxers = serializer.validated_data["group_boxers"]
+
+        for group_boxer in group_boxers:
+            group_boxer.group = target_group
+
+        GroupBoxer.objects.bulk_update(group_boxers, ["group"])
+
+        return Response({"detail": "Участники перенесены."})
 
 
 @extend_schema(tags=["Бои ROOM"])

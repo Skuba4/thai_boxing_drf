@@ -76,6 +76,35 @@ class GroupBoxerSerializer(serializers.ModelSerializer):
         fields = ("id", "boxer", "group", "boxer_id", "group_id")
 
 
+class GroupBoxerBulkMoveSerializer(serializers.Serializer):
+    target_group_id = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(),
+        source="target_group",
+    )
+    group_boxer_ids = serializers.PrimaryKeyRelatedField(
+        queryset=GroupBoxer.objects.all(),
+        many=True,
+        source="group_boxers",
+    )
+
+    def validate(self, attrs):
+        target_group = attrs["target_group"]
+        group_boxers = attrs["group_boxers"]
+
+        if not group_boxers:
+            raise serializers.ValidationError("Список участников пуст.")
+
+        room_id = target_group.room_id
+
+        for group_boxer in group_boxers:
+            if group_boxer.group.room_id != room_id:
+                raise serializers.ValidationError(
+                    "Нельзя переносить участников между разными комнатами."
+                )
+
+        return attrs
+
+
 class EmptySerializer(serializers.Serializer):
     pass
 

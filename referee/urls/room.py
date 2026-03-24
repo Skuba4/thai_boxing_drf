@@ -1,13 +1,17 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .views import *
-
-app_name = "referee"
+from referee.views import (
+    RoomViewSet,
+    RoomApplicationDecisionViewSet,
+    RoomApplicationView,
+    RingViewSet,
+    BoxerRoomViewSet,
+    GroupViewSet,
+)
 
 router = DefaultRouter()
 router.register("rooms", RoomViewSet)
-router.register("boxers", BoxerViewSet)
 router.register("applications", RoomApplicationDecisionViewSet)
 
 urlpatterns = router.urls + [
@@ -56,25 +60,6 @@ urlpatterns = router.urls + [
         ),
     ),
     path(
-        "room/<uuid:room_uuid>/fights/",
-        FightViewSet.as_view(
-            {
-                "post": "create",
-                "get": "list",
-            }
-        ),
-    ),
-    path(
-        "room/<uuid:room_uuid>/fight/<int:fight_id>/",
-        FightViewSet.as_view(
-            {
-                "get": "retrieve",
-                "patch": "partial_update",
-                "delete": "destroy",
-            }
-        ),
-    ),
-    path(
         "room/<uuid:room_uuid>/groups/",
         GroupViewSet.as_view(
             {
@@ -86,25 +71,6 @@ urlpatterns = router.urls + [
     path(
         "room/<uuid:room_uuid>/group/<int:group_id>/",
         GroupViewSet.as_view(
-            {
-                "get": "retrieve",
-                "patch": "partial_update",
-                "delete": "destroy",
-            }
-        ),
-    ),
-    path(
-        "group/<int:group_id>/boxers/",
-        GroupBoxerViewSet.as_view(
-            {
-                "post": "create",
-                "get": "list",
-            }
-        ),
-    ),
-    path(
-        "group/<int:group_id>/boxer/<int:group_boxer_id>/",
-        GroupBoxerViewSet.as_view(
             {
                 "get": "retrieve",
                 "patch": "partial_update",
