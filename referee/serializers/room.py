@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from referee.models import Room, Ring, RoomApplication, Group, GroupBoxer, BoxerRoom
+from referee.serializers import GroupBoxerSerializer
 from users.serializers import UserInfoSerializer
 
 
@@ -68,6 +69,8 @@ class RingSerializer(serializers.ModelSerializer):
 
 class GroupSerializer(serializers.ModelSerializer):
     ring = RingSerializer(read_only=True)
+    boxers = GroupBoxerSerializer(source="groups", many=True, read_only=True)
+
     ring_id = serializers.PrimaryKeyRelatedField(
         queryset=Ring.objects.all(),
         source="ring",
@@ -83,7 +86,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ("id", "room", "name", "ring", "ring_id", "boxer_ids")
+        fields = ("id", "room", "name", "ring", "boxers", "ring_id", "boxer_ids")
 
     @transaction.atomic
     def create(self, validated_data):
