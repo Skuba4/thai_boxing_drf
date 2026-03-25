@@ -71,7 +71,7 @@ class GroupBoxerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupBoxer
-        fields = ("id", "group", "boxer_id", "group_id")
+        fields = ("id", "boxer", "boxer_id", "group_id")
 
 
 class GroupBoxerBulkMoveSerializer(serializers.Serializer):
