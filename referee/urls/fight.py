@@ -44,7 +44,7 @@ urlpatterns = router.urls + [
         "group/<int:group_id>/boxer/move/",
         GroupBoxerViewSet.as_view(
             {
-                "post": "bulk_move",
+                "patch": "bulk_move",
             }
         ),
     ),

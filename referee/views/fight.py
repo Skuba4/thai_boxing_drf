@@ -99,6 +99,9 @@ class GroupBoxerViewSet(ModelViewSet):
             return [IsPremium(), IsBoss()]
         return [IsAuthenticated()]
 
+    # def perform_create(self, serializer):
+    #     serializer.save()
+
     @action(detail=False, methods=["patch"])
     @transaction.atomic
     def bulk_move(self, request, *args, **kwargs):
