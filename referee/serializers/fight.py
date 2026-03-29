@@ -74,6 +74,14 @@ class GroupBoxerSerializer(serializers.ModelSerializer):
         fields = ("id", "boxer", "boxer_id", "group_id")
 
 
+class GroupBoxerBulkCreateSerializer(serializers.Serializer):
+    boxer_ids = serializers.PrimaryKeyRelatedField(
+        queryset=BoxerRoom.objects.all(),
+        many=True,
+        source="boxers",
+    )
+
+
 class GroupBoxerBulkMoveSerializer(serializers.Serializer):
     target_group_id = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(),

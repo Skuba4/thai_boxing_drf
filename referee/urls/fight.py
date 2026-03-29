@@ -48,4 +48,8 @@ urlpatterns = router.urls + [
             }
         ),
     ),
+    path(
+        "group/<int:group_id>/boxers/bulk/",
+        GroupBoxerViewSet.as_view({"post": "bulk_create"}),
+    ),
 ]

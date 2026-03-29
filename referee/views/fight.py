@@ -14,6 +14,7 @@ from referee.serializers import (
     EmptySerializer,
     GroupBoxerSerializer,
     GroupBoxerBulkMoveSerializer,
+    GroupBoxerBulkCreateSerializer,
 )
 from referee.services.boxers_room import add_trainer_boxers_to_room
 
@@ -95,12 +96,30 @@ class GroupBoxerViewSet(ModelViewSet):
         return GroupBoxer.objects.filter(group_id=self.kwargs["group_id"])
 
     def get_permissions(self):
-        if self.action in ["create", "partial_update", "destroy"]:
+        if self.action in [
+            "create",
+            "partial_update",
+            "destroy",
+            "bulk_move",
+            "bulk_create",
+        ]:
             return [IsPremium(), IsBoss()]
         return [IsAuthenticated()]
 
-    # def perform_create(self, serializer):
-    #     serializer.save()
+    @action(detail=False, methods=["post"])
+    @transaction.atomic
+    def bulk_create(self, request, *args, **kwargs):
+        serializer = GroupBoxerBulkCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        boxers = serializer.validated_data["boxers"]
+        group_id = self.kwargs["group_id"]
+
+        group_boxers = [GroupBoxer(group_id=group_id, boxer=boxer) for boxer in boxers]
+
+        GroupBoxer.objects.bulk_create(group_boxers)
+
+        return Response({"detail": "Участники добавлены."}, status=201)
 
     @action(detail=False, methods=["patch"])
     @transaction.atomic
