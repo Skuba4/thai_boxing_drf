@@ -119,7 +119,13 @@ class RoomApplicationView(ModelViewSet):
     lookup_url_kwarg = "application_uuid"
 
     def get_queryset(self):
-        return RoomApplication.objects.filter(room__boss=self.request.user)
+        queryset = RoomApplication.objects.filter(room__boss=self.request.user)
+
+        room_uuid = self.kwargs.get("room_uuid")
+        if room_uuid:
+            queryset = queryset.filter(room__uuid=room_uuid)
+
+        return queryset
 
     @action(
         detail=False, methods=["post"], permission_classes=[IsAuthenticated, IsPremium]

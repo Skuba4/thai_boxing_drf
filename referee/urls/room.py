@@ -14,6 +14,22 @@ router.register("rooms", RoomViewSet)
 
 urlpatterns = router.urls + [
     path(
+        "applications/",
+        RoomApplicationView.as_view(
+            {
+                "get": "list",
+            }
+        ),
+    ),
+    path(
+        "room/<uuid:room_uuid>/applications/",
+        RoomApplicationView.as_view(
+            {
+                "get": "list",
+            }
+        ),
+    ),
+    path(
         "room/<uuid:room_uuid>/application/",
         RoomApplicationView.as_view(
             {
