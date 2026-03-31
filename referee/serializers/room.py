@@ -69,7 +69,7 @@ class RingSerializer(serializers.ModelSerializer):
 
 class GroupSerializer(serializers.ModelSerializer):
     ring = RingSerializer(read_only=True)
-    boxers = GroupBoxerSerializer(many=True, read_only=True)
+    group_boxers = GroupBoxerSerializer(source="boxers", many=True, read_only=True)
 
     ring_id = serializers.PrimaryKeyRelatedField(
         queryset=Ring.objects.all(),
@@ -86,7 +86,15 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ("id", "room", "name", "ring", "boxers", "ring_id", "boxer_ids")
+        fields = (
+            "id",
+            "room",
+            "name",
+            "ring",
+            "group_boxers",
+            "ring_id",
+            "boxer_ids",
+        )
 
     @transaction.atomic
     def create(self, validated_data):
