@@ -98,6 +98,7 @@ class RoomApplication(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_applications"
     )
+    boxers = models.ManyToManyField("referee.Boxer", related_name="applications")
 
     class Meta:
         constraints = [

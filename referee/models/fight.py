@@ -34,6 +34,17 @@ class Boxer(models.Model):
     trainer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="boxers")
 
 
+# class BoxerEntry(models.Model):
+#     """
+#     Заявленные боксеры
+#     """
+#
+#     boxer = models.ForeignKey(Boxer, on_delete=models.CASCADE, related_name="entries")
+#     room = models.ForeignKey(
+#         "referee.Room", on_delete=models.CASCADE, related_name="boxer_entries"
+#     )
+
+
 class BoxerRoom(models.Model):
     """
     Снимок боксера внутри конкретной комнаты

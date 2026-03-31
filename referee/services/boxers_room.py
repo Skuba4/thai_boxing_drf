@@ -2,25 +2,21 @@ from datetime import date
 
 from rest_framework.exceptions import ValidationError
 
-from referee.models import Boxer, BoxerRoom, Fight, FightSlot
+from referee.models import BoxerRoom, RoomApplication
 
 
 def dell_trainer_boxers_to_room(room, trainer):
     boxers = BoxerRoom.objects.filter(room=room, trainer=trainer)
-    fight_ids = list(
-        FightSlot.objects.filter(boxer__in=boxers).values_list("fight_id", flat=True)
-    )
-    Fight.objects.filter(id__in=fight_ids).delete()
-
     boxers.delete()
 
 
 def add_trainer_boxers_to_room(room, trainer):
     dell_trainer_boxers_to_room(room, trainer)
 
-    boxers = Boxer.objects.filter(trainer=trainer)
-    today = date.today()
+    application = RoomApplication.objects.get(room=room, user=trainer)
+    boxers = application.boxers.all()
 
+    today = date.today()
     room_boxers = []
 
     for boxer in boxers:

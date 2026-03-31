@@ -107,35 +107,13 @@ class GroupViewSet(ModelViewSet):
 
 
 @extend_schema(
-    tags=["Кнопки"],
-    summary="Участие в соревнованиях",
+    tags=["Работа с заявками комнаты"],
 )
-class RoomApplicationView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, *args, **kwargs):
-        obj, created = RoomApplication.objects.get_or_create(
-            room_id=kwargs["room_uuid"], user=request.user
-        )
-
-        if created:
-            return Response(
-                {"message": "Заявка отправлена"}, status=status.HTTP_201_CREATED
-            )
-        return Response(
-            {"message": "Заявка уже есть", "status": obj.status},
-            status=status.HTTP_200_OK,
-        )
-
-
-@extend_schema(
-    tags=["Решения по заявкам в ROOM"],
-)
-class RoomApplicationDecisionViewSet(ModelViewSet):
+class RoomApplicationView(ModelViewSet):
     permission_classes = [IsAuthenticated, IsPremium]
     queryset = RoomApplication.objects.all()
     serializer_class = RoomApplicationDecisionSerializers
-    http_method_names = ["get", "patch", "delete"]
+    http_method_names = ["get", "post", "patch", "delete"]
 
     lookup_field = "uuid"
     lookup_url_kwarg = "application_uuid"
@@ -143,20 +121,106 @@ class RoomApplicationDecisionViewSet(ModelViewSet):
     def get_queryset(self):
         return RoomApplication.objects.filter(room__boss=self.request.user)
 
+    @action(
+        detail=False, methods=["post"], permission_classes=[IsAuthenticated, IsPremium]
+    )
+    @transaction.atomic
+    def create_application(self, request, *args, **kwargs):
+        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
+
+        if room.boss == request.user:
+            return Response(
+                {"detail": "Хозяин комнаты не может подать заявку."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        application, created = RoomApplication.objects.get_or_create(
+            room=room,
+            user=request.user,
+            defaults={"status": RoomApplication.Status.WAIT},
+        )
+
+        if not created:
+            return Response(
+                {"message": "Заявка уже есть", "status": application.status},
+                status=status.HTTP_200_OK,
+            )
+
+        boxers = serializer.validated_data.get("boxers", [])
+        application.boxers.set(boxers)
+
+        return Response(
+            {
+                "message": "Заявка отправлена",
+                "status": application.status,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(
+        detail=False, methods=["patch"], permission_classes=[IsAuthenticated, IsPremium]
+    )
+    @transaction.atomic
+    def update_application(self, request, *args, **kwargs):
+        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
+        application = RoomApplication.objects.get(room=room, user=request.user)
+
+        if application.status != RoomApplication.Status.WAIT:
+            return Response(
+                {"detail": "Заявка уже обработана."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = self.get_serializer(application, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        boxers = serializer.validated_data.get("boxers", None)
+        if boxers is not None:
+            application.boxers.set(boxers)
+
+        return Response(
+            {"message": "Заявка обновлена.", "status": application.status},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(
+        detail=False,
+        methods=["delete"],
+        permission_classes=[IsAuthenticated, IsPremium],
+    )
+    @transaction.atomic
+    def delete_application(self, request, *args, **kwargs):
+        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
+        application = RoomApplication.objects.get(room=room, user=request.user)
+
+        if application.status != RoomApplication.Status.WAIT:
+            return Response(
+                {"detail": "Заявка уже обработана."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        application.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @transaction.atomic
     def perform_update(self, serializer):
-        with transaction.atomic():
-            application = self.get_object()
-            room = application.room
+        application = self.get_object()
+        room = application.room
 
-            trainer = application.user
-            application = serializer.save()
+        trainer = application.user
+        application = serializer.save()
 
-            match application.status:
-                case RoomApplication.Status.YES:
-                    add_trainer_boxers_to_room(room, trainer)
-                case _:
-                    dell_trainer_boxers_to_room(room, trainer)
+        match application.status:
+            case RoomApplication.Status.YES:
+                add_trainer_boxers_to_room(room, trainer)
+            case _:
+                dell_trainer_boxers_to_room(room, trainer)
 
+    @transaction.atomic
     def perform_destroy(self, instance):
         room = instance.room
         trainer = instance.user

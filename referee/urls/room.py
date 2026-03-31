@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 
 from referee.views import (
     RoomViewSet,
-    RoomApplicationDecisionViewSet,
     RoomApplicationView,
     RingViewSet,
     BoxerRoomViewSet,
@@ -12,10 +11,28 @@ from referee.views import (
 
 router = DefaultRouter()
 router.register("rooms", RoomViewSet)
-router.register("applications", RoomApplicationDecisionViewSet)
 
 urlpatterns = router.urls + [
-    path("room/<uuid:room_uuid>/applications/", RoomApplicationView.as_view()),
+    path(
+        "room/<uuid:room_uuid>/application/",
+        RoomApplicationView.as_view(
+            {
+                "post": "create_application",
+                "patch": "update_application",
+                "delete": "delete_application",
+            }
+        ),
+    ),
+    path(
+        "room/application/<uuid:application_uuid>/",
+        RoomApplicationView.as_view(
+            {
+                "get": "retrieve",
+                "patch": "partial_update",
+                "delete": "destroy",
+            }
+        ),
+    ),
     path(
         "room/<uuid:room_uuid>/rings/",
         RingViewSet.as_view(

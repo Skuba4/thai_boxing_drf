@@ -3,8 +3,16 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from referee.models import Room, Ring, RoomApplication, Group, GroupBoxer, BoxerRoom
-from referee.serializers.fight import GroupBoxerSerializer
+from referee.models import (
+    Room,
+    Ring,
+    RoomApplication,
+    Group,
+    GroupBoxer,
+    BoxerRoom,
+    Boxer,
+)
+from referee.serializers.fight import GroupBoxerSerializer, BoxerSerializer
 from referee.services.boxers_room import update_availability
 from users.serializers import UserInfoSerializer
 
@@ -114,6 +122,14 @@ class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
     """Заявка на участие в соревнованиях"""
 
     user = UserInfoSerializer(read_only=True)
+    boxer_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Boxer.objects.all(),
+        many=True,
+        source="boxers",
+        write_only=True,
+    )
+
+    boxers = BoxerSerializer(many=True, read_only=True)
 
     class Meta:
         model = RoomApplication
@@ -122,5 +138,7 @@ class RoomApplicationDecisionSerializers(serializers.ModelSerializer):
             "uuid",
             "user",
             "room",
+            "boxer_ids",
+            "boxers",
             "status",
         )
