@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from referee.models import Room, RoomApplication, Ring, Group, BoxerRoom
+from referee.models import Room, RoomApplication, Ring, Group, BoxerRoom, GroupBoxer
 from referee.permissions import IsPremium, IsBoss
 from referee.serializers import (
     RingSerializer,

@@ -5,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 from referee.models import Room, Ring, RoomApplication, Group, GroupBoxer, BoxerRoom
 from referee.serializers.fight import GroupBoxerSerializer
+from referee.services.boxers_room import update_availability
 from users.serializers import UserInfoSerializer
 
 
@@ -104,6 +105,7 @@ class GroupSerializer(serializers.ModelSerializer):
         GroupBoxer.objects.bulk_create(
             [GroupBoxer(group=group, boxer=boxer) for boxer in boxers]
         )
+        update_availability(boxers, False)
 
         return group
 
