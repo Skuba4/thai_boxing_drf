@@ -63,3 +63,10 @@ def validate_min_boxer_age(value):
     if age < 5:
         raise ValidationError("Минимальный возраст 5 лет")
     return value
+
+
+def update_availability(boxers, value):
+    for boxer in boxers:
+        boxer.is_available = value
+
+    BoxerRoom.objects.bulk_update(boxers, ["is_available"])

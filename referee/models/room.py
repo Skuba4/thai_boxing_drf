@@ -64,12 +64,12 @@ class Ring(models.Model):
 class Group(models.Model):
     name = models.CharField(max_length=20)
     room = models.ForeignKey(
-        "referee.Room", on_delete=models.CASCADE, related_name="rooms_group"
+        "referee.Room", on_delete=models.CASCADE, related_name="groups"
     )
     ring = models.ForeignKey(
         "referee.Ring",
         on_delete=models.CASCADE,
-        related_name="rings_group",
+        related_name="groups",
         blank=True,
         null=True,
     )

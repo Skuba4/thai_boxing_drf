@@ -1,5 +1,5 @@
 from django.db import transaction
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ from referee.serializers import (
     GroupBoxerBulkMoveSerializer,
     GroupBoxerBulkCreateSerializer,
 )
-from referee.services.boxers_room import add_trainer_boxers_to_room
+from referee.services.boxers_room import add_trainer_boxers_to_room, update_availability
 
 
 @extend_schema(tags=["Боксеры USER"])
@@ -106,6 +106,12 @@ class GroupBoxerViewSet(ModelViewSet):
             return [IsPremium(), IsBoss()]
         return [IsAuthenticated()]
 
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        instance.boxer.is_available = True
+        instance.boxer.save(update_fields=["is_available"])
+        instance.delete()
+
     @action(detail=False, methods=["post"])
     @transaction.atomic
     def bulk_create(self, request, *args, **kwargs):
@@ -116,8 +122,9 @@ class GroupBoxerViewSet(ModelViewSet):
         group_id = self.kwargs["group_id"]
 
         group_boxers = [GroupBoxer(group_id=group_id, boxer=boxer) for boxer in boxers]
-
         GroupBoxer.objects.bulk_create(group_boxers)
+
+        update_availability(boxers, False)
 
         return Response({"detail": "Участники добавлены."}, status=201)
 

@@ -82,10 +82,10 @@ class BoxerRoom(models.Model):
 
 class GroupBoxer(models.Model):
     boxer = models.ForeignKey(
-        "referee.BoxerRoom", on_delete=models.CASCADE, related_name="boxers_group"
+        "referee.BoxerRoom", on_delete=models.CASCADE, related_name="groups"
     )
     group = models.ForeignKey(
-        "referee.Group", on_delete=models.CASCADE, related_name="groups"
+        "referee.Group", on_delete=models.CASCADE, related_name="boxers"
     )
 
 

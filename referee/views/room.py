@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from referee.models import Room, RoomApplication, Ring, Group
+from referee.models import Room, RoomApplication, Ring, Group, BoxerRoom
 from referee.permissions import IsPremium, IsBoss
 from referee.serializers import (
     RingSerializer,
@@ -21,6 +21,7 @@ from referee.serializers import (
 from referee.services.boxers_room import (
     add_trainer_boxers_to_room,
     dell_trainer_boxers_to_room,
+    update_availability,
 )
 from referee.services.room import ring_creates
 
@@ -96,6 +97,13 @@ class GroupViewSet(ModelViewSet):
         if self.action in ["create", "partial_update", "destroy"]:
             return [IsPremium(), IsBoss()]
         return [IsAuthenticated()]
+
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        boxers = [group_boxer.boxer for group_boxer in instance.boxers.all()]
+        update_availability(boxers, True)
+
+        instance.delete()
 
 
 @extend_schema(
