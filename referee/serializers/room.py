@@ -69,7 +69,7 @@ class RingSerializer(serializers.ModelSerializer):
 
 class GroupSerializer(serializers.ModelSerializer):
     ring = RingSerializer(read_only=True)
-    boxers = GroupBoxerSerializer(source="boxers", many=True, read_only=True)
+    boxers = GroupBoxerSerializer(many=True, read_only=True)
 
     ring_id = serializers.PrimaryKeyRelatedField(
         queryset=Ring.objects.all(),
