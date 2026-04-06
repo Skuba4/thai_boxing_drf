@@ -40,7 +40,7 @@ urlpatterns = router.urls + [
         ),
     ),
     path(
-        "room/application/<uuid:application_uuid>/",
+        "room/<uuid:room_uuid>/application/<uuid:application_uuid>/",
         RoomApplicationView.as_view(
             {
                 "get": "retrieve",
