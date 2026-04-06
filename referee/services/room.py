@@ -17,5 +17,5 @@ def ring_creates(user, room, count):
     ]
 
     Ring.objects.bulk_create(rings)
-
-    add_trainer_boxers_to_room(room, user)
+    #
+    # add_trainer_boxers_to_room(room, user)
