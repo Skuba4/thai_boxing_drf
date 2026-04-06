@@ -2,11 +2,11 @@ from datetime import date
 
 from rest_framework.exceptions import ValidationError
 
-from referee.models import BoxerRoom, RoomApplication
+from referee.models import RoomBoxer, RoomApplication
 
 
 def dell_trainer_boxers_to_room(room, trainer):
-    boxers = BoxerRoom.objects.filter(room=room, trainer=trainer)
+    boxers = RoomBoxer.objects.filter(room=room, trainer=trainer)
     boxers.delete()
 
 
@@ -32,7 +32,7 @@ def add_trainer_boxers_to_room(room, trainer):
         weight_category = "Заглушка"
 
         room_boxers.append(
-            BoxerRoom(
+            RoomBoxer(
                 first_name=boxer.first_name,
                 last_name=boxer.last_name,
                 middle_name=boxer.middle_name,
@@ -48,7 +48,7 @@ def add_trainer_boxers_to_room(room, trainer):
             )
         )
 
-    BoxerRoom.objects.bulk_create(room_boxers)
+    RoomBoxer.objects.bulk_create(room_boxers)
 
 
 def validate_min_boxer_age(value):
@@ -65,4 +65,4 @@ def update_availability(boxers, value):
     for boxer in boxers:
         boxer.is_available = value
 
-    BoxerRoom.objects.bulk_update(boxers, ["is_available"])
+    RoomBoxer.objects.bulk_update(boxers, ["is_available"])

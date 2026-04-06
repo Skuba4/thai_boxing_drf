@@ -34,18 +34,7 @@ class Boxer(models.Model):
     trainer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="boxers")
 
 
-# class BoxerEntry(models.Model):
-#     """
-#     Заявленные боксеры
-#     """
-#
-#     boxer = models.ForeignKey(Boxer, on_delete=models.CASCADE, related_name="entries")
-#     room = models.ForeignKey(
-#         "referee.Room", on_delete=models.CASCADE, related_name="boxer_entries"
-#     )
-
-
-class BoxerRoom(models.Model):
+class RoomBoxer(models.Model):
     """
     Снимок боксера внутри конкретной комнаты
 
@@ -93,7 +82,9 @@ class BoxerRoom(models.Model):
 
 class GroupBoxer(models.Model):
     boxer = models.ForeignKey(
-        "referee.BoxerRoom", on_delete=models.CASCADE, related_name="groups"
+        "referee.RoomBoxer",
+        on_delete=models.CASCADE,
+        related_name="groups",
     )
     group = models.ForeignKey(
         "referee.Group", on_delete=models.CASCADE, related_name="boxers"
@@ -129,7 +120,7 @@ class Fight(models.Model):
         choices=Stage,
     )
     winner = models.ForeignKey(
-        BoxerRoom,
+        RoomBoxer,
         on_delete=models.CASCADE,
         related_name="wins",
         null=True,
@@ -156,7 +147,7 @@ class FightSlot(models.Model):
     )
     corner = models.CharField(max_length=4, choices=Corner)
     boxer = models.ForeignKey(
-        BoxerRoom,
+        RoomBoxer,
         on_delete=models.CASCADE,
         null=True,
         blank=True,

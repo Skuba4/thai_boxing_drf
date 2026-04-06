@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from referee.models import Boxer, BoxerRoom, Room, Fight, GroupBoxer
+from referee.models import Boxer, RoomBoxer, Room, Fight, GroupBoxer
 from referee.permissions import IsPremium, IsBoss
 from referee.serializers import (
     BoxerSerializer,
@@ -38,7 +38,7 @@ class BoxerViewSet(ModelViewSet):
 
 @extend_schema(tags=["Боксеры ROOM"])
 class BoxerRoomViewSet(ModelViewSet):
-    queryset = BoxerRoom.objects.all()
+    queryset = RoomBoxer.objects.all()
     serializer_class = BoxerRoomSerializer
     http_method_names = ["post", "get", "patch", "delete"]
 
@@ -51,7 +51,7 @@ class BoxerRoomViewSet(ModelViewSet):
         return [IsPremium()]
 
     def get_queryset(self):
-        return BoxerRoom.objects.filter(room__uuid=self.kwargs["room_uuid"])
+        return RoomBoxer.objects.filter(room__uuid=self.kwargs["room_uuid"])
 
     def get_serializer_class(self):
         if self.action == "sync":
@@ -78,7 +78,7 @@ class BoxerRoomViewSet(ModelViewSet):
 
         add_trainer_boxers_to_room(room, user)
 
-        obj = BoxerRoom.objects.filter(room=self.kwargs["room_uuid"], trainer=user)
+        obj = RoomBoxer.objects.filter(room=self.kwargs["room_uuid"], trainer=user)
         serializer = self.get_serializer(obj, many=True)
         return Response(serializer.data)
 

@@ -9,7 +9,7 @@ from referee.models import (
     RoomApplication,
     Group,
     GroupBoxer,
-    BoxerRoom,
+    RoomBoxer,
     Boxer,
 )
 from referee.serializers.fight import GroupBoxerSerializer, BoxerSerializer
@@ -88,7 +88,7 @@ class GroupSerializer(serializers.ModelSerializer):
         allow_null=True,
     )
     boxer_ids = serializers.PrimaryKeyRelatedField(
-        queryset=BoxerRoom.objects.all(),
+        queryset=RoomBoxer.objects.all(),
         many=True,
         write_only=True,
     )
