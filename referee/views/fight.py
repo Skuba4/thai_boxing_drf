@@ -59,26 +59,6 @@ class RoomBoxerViewSet(ModelViewSet):
         Fight.objects.filter(id__in=fight_ids).delete()
         instance.delete()
 
-    @extend_schema(
-        summary="Синхронизировать личный список",
-        request=EmptySerializer,
-        responses=RoomBoxerSerializer(many=True),
-    )
-    @action(
-        detail=False,
-        methods=["post"],
-    )
-    @transaction.atomic
-    def sync(self, request, *args, **kwargs):
-        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
-        user = request.user
-
-        add_trainer_boxers_to_room(room, user)
-
-        obj = RoomBoxer.objects.filter(room=self.kwargs["room_uuid"], trainer=user)
-        serializer = RoomBoxerSerializer(obj, many=True)
-        return Response(serializer.data)
-
 
 @extend_schema(tags=["Боксеры группы"])
 class GroupBoxerViewSet(ModelViewSet):

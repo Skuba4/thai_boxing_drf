@@ -1,19 +1,28 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from referee.views import GroupBoxerViewSet, BoxerViewSet, FightViewSet
+from referee.views import (
+    GroupBoxerViewSet,
+    BoxerViewSet,
+    FightViewSet,
+    RoomBoxerViewSet,
+)
 
 router = DefaultRouter()
 router.register("boxers", BoxerViewSet)
 
 urlpatterns = router.urls + [
     path(
-        "room/<uuid:room_uuid>/fights/",
-        FightViewSet.as_view({"post": "create", "get": "list"}),
+        "room/<uuid:room_uuid>/boxers/",
+        RoomBoxerViewSet.as_view(
+            {
+                "get": "list",
+            }
+        ),
     ),
     path(
-        "room/<uuid:room_uuid>/fight/<int:fight_id>/",
-        FightViewSet.as_view(
+        "room/<uuid:room_uuid>/boxers/<uuid:boxer_uuid>/",
+        RoomBoxerViewSet.as_view(
             {
                 "get": "retrieve",
                 "patch": "partial_update",
@@ -51,5 +60,19 @@ urlpatterns = router.urls + [
     path(
         "group/<int:group_id>/boxers/bulk/",
         GroupBoxerViewSet.as_view({"post": "bulk_create"}),
+    ),
+    path(
+        "room/<uuid:room_uuid>/fights/",
+        FightViewSet.as_view({"post": "create", "get": "list"}),
+    ),
+    path(
+        "room/<uuid:room_uuid>/fight/<int:fight_id>/",
+        FightViewSet.as_view(
+            {
+                "get": "retrieve",
+                "patch": "partial_update",
+                "delete": "destroy",
+            }
+        ),
     ),
 ]
