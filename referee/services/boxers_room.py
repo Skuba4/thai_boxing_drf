@@ -10,14 +10,15 @@ def dell_trainer_boxers_to_room(room, trainer):
     boxers.delete()
 
 
-def add_trainer_boxers_to_room(room, trainer):
+def add_trainer_boxers_to_room(room, trainer, boxers=None):
     dell_trainer_boxers_to_room(room, trainer)
-
-    application = RoomApplication.objects.get(room=room, user=trainer)
-    boxers = application.boxers.all()
 
     today = date.today()
     room_boxers = []
+    application = RoomApplication.objects.get(room=room, user=trainer)
+
+    if boxers is None:
+        boxers = application.boxers.all()
 
     for boxer in boxers:
         age = (

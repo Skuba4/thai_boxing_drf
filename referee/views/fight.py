@@ -1,5 +1,6 @@
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -11,12 +12,16 @@ from referee.serializers import (
     BoxerSerializer,
     RoomBoxerSerializer,
     FightSerializer,
-    EmptySerializer,
     GroupBoxerSerializer,
     GroupBoxerBulkMoveSerializer,
     GroupBoxerBulkCreateSerializer,
+    RoomBoxerBulkCreateSerializer,
 )
-from referee.services.boxers_room import add_trainer_boxers_to_room, update_availability
+from referee.services.boxers_room import (
+    add_trainer_boxers_to_room,
+    update_availability,
+    dell_trainer_boxers_to_room,
+)
 
 
 @extend_schema(tags=["Боксеры пользователя"])
@@ -46,7 +51,7 @@ class RoomBoxerViewSet(ModelViewSet):
     lookup_url_kwarg = "boxer_uuid"
 
     def get_permissions(self):
-        if self.action in ["partial_update", "destroy", "sync"]:
+        if self.action in ["partial_update", "destroy", "bulk_create", "bulk_destroy"]:
             return [IsPremium(), IsBoss()]
         return [IsPremium()]
 
@@ -58,6 +63,41 @@ class RoomBoxerViewSet(ModelViewSet):
         fight_ids = list(instance.fight_slots.values_list("fight_id", flat=True))
         Fight.objects.filter(id__in=fight_ids).delete()
         instance.delete()
+
+    @extend_schema(
+        summary="Добавить своих спортсменов в комнату",
+        request=RoomBoxerBulkCreateSerializer,
+        responses=RoomBoxerSerializer(many=True),
+    )
+    @action(detail=False, methods=["post"])
+    @transaction.atomic
+    def bulk_create(self, request, *args, **kwargs):
+        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
+        user = request.user
+
+        serializer = RoomBoxerBulkCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        boxers = serializer.validated_data["boxers"]
+
+        add_trainer_boxers_to_room(room, user, boxers)
+
+        obj = RoomBoxer.objects.filter(room=room, trainer=user, source_boxer__in=boxers)
+        return Response(
+            RoomBoxerSerializer(obj, many=True).data, status=status.HTTP_201_CREATED
+        )
+
+    @extend_schema(
+        summary="Удалить своих спортсменов из комнаты",
+    )
+    @action(detail=False, methods=["delete"])
+    @transaction.atomic
+    def bulk_destroy(self, request):
+        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
+        user = request.user
+
+        dell_trainer_boxers_to_room(room, user)
+
+        return Response({"detail": "Участники удалены."})
 
 
 @extend_schema(tags=["Боксеры группы"])
