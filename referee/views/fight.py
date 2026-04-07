@@ -91,7 +91,7 @@ class RoomBoxerViewSet(ModelViewSet):
     )
     @action(detail=False, methods=["delete"])
     @transaction.atomic
-    def bulk_destroy(self, request):
+    def bulk_destroy(self, request, *args, **kwargs):
         room = Room.objects.get(uuid=self.kwargs["room_uuid"])
         user = request.user
 
