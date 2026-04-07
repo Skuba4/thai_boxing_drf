@@ -17,6 +17,8 @@ urlpatterns = router.urls + [
         RoomBoxerViewSet.as_view(
             {
                 "get": "list",
+                "post": "bulk_create",
+                "delete": "bulk_destroy",
             }
         ),
     ),
