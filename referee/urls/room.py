@@ -33,6 +33,7 @@ urlpatterns = router.urls + [
         "room/<uuid:room_uuid>/application/",
         RoomApplicationView.as_view(
             {
+                "get": "get_application",
                 "post": "create_application",
                 "patch": "update_application",
                 "delete": "delete_application",

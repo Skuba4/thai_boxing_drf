@@ -208,6 +208,15 @@ class RoomApplicationView(ModelViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(
+        detail=False, methods=["get"], permission_classes=[IsAuthenticated, IsPremium]
+    )
+    def get_application(self, request, *args, **kwargs):
+        room = Room.objects.get(uuid=self.kwargs["room_uuid"])
+        application = RoomApplication.objects.get(room=room, user=request.user)
+        serializer = self.get_serializer(application)
+        return Response(serializer.data)
+
     @transaction.atomic
     def perform_update(self, serializer):
         application = self.get_object()
