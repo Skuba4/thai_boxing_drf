@@ -9,7 +9,7 @@ from referee.models import Boxer, RoomBoxer, Room, Fight, GroupBoxer
 from referee.permissions import IsPremium, IsBoss
 from referee.serializers import (
     BoxerSerializer,
-    BoxerRoomSerializer,
+    RoomBoxerSerializer,
     FightSerializer,
     EmptySerializer,
     GroupBoxerSerializer,
@@ -19,7 +19,7 @@ from referee.serializers import (
 from referee.services.boxers_room import add_trainer_boxers_to_room, update_availability
 
 
-@extend_schema(tags=["Боксеры USER"])
+@extend_schema(tags=["Боксеры пользователя"])
 class BoxerViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsPremium]
     queryset = Boxer.objects.all()
@@ -36,10 +36,10 @@ class BoxerViewSet(ModelViewSet):
         serializer.save(trainer=self.request.user)
 
 
-@extend_schema(tags=["Боксеры ROOM"])
-class BoxerRoomViewSet(ModelViewSet):
+@extend_schema(tags=["Участники соревнований"])
+class RoomBoxerViewSet(ModelViewSet):
     queryset = RoomBoxer.objects.all()
-    serializer_class = BoxerRoomSerializer
+    serializer_class = RoomBoxerSerializer
     http_method_names = ["post", "get", "patch", "delete"]
 
     lookup_field = "uuid"
@@ -53,11 +53,6 @@ class BoxerRoomViewSet(ModelViewSet):
     def get_queryset(self):
         return RoomBoxer.objects.filter(room__uuid=self.kwargs["room_uuid"])
 
-    def get_serializer_class(self):
-        if self.action == "sync":
-            return EmptySerializer
-        return BoxerRoomSerializer
-
     @transaction.atomic
     def perform_destroy(self, instance):
         fight_ids = list(instance.fight_slots.values_list("fight_id", flat=True))
@@ -66,6 +61,8 @@ class BoxerRoomViewSet(ModelViewSet):
 
     @extend_schema(
         summary="Синхронизировать личный список",
+        request=EmptySerializer,
+        responses=RoomBoxerSerializer(many=True),
     )
     @action(
         detail=False,
@@ -79,7 +76,7 @@ class BoxerRoomViewSet(ModelViewSet):
         add_trainer_boxers_to_room(room, user)
 
         obj = RoomBoxer.objects.filter(room=self.kwargs["room_uuid"], trainer=user)
-        serializer = self.get_serializer(obj, many=True)
+        serializer = RoomBoxerSerializer(obj, many=True)
         return Response(serializer.data)
 
 

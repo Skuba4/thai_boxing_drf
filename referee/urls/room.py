@@ -5,7 +5,7 @@ from referee.views import (
     RoomViewSet,
     RoomApplicationView,
     RingViewSet,
-    BoxerRoomViewSet,
+    RoomBoxerViewSet,
     GroupViewSet,
 )
 
@@ -69,7 +69,7 @@ urlpatterns = router.urls + [
     ),
     path(
         "room/<uuid:room_uuid>/boxers/",
-        BoxerRoomViewSet.as_view(
+        RoomBoxerViewSet.as_view(
             {
                 "get": "list",
             }
@@ -77,7 +77,7 @@ urlpatterns = router.urls + [
     ),
     path(
         "room/<uuid:room_uuid>/boxers/<uuid:boxer_uuid>/",
-        BoxerRoomViewSet.as_view(
+        RoomBoxerViewSet.as_view(
             {
                 "get": "retrieve",
                 "patch": "partial_update",
@@ -87,7 +87,7 @@ urlpatterns = router.urls + [
     ),
     path(
         "room/<uuid:room_uuid>/boxers/sync/",
-        BoxerRoomViewSet.as_view(
+        RoomBoxerViewSet.as_view(
             {
                 "post": "sync",
             }

@@ -28,7 +28,7 @@ class BoxerSerializer(serializers.ModelSerializer):
         return validate_min_boxer_age(value)
 
 
-class BoxerRoomSerializer(serializers.ModelSerializer):
+class RoomBoxerSerializer(serializers.ModelSerializer):
     """Боксеры конкретной комнаты"""
 
     trainer = UserInfoSerializer(read_only=True)
@@ -56,7 +56,7 @@ class BoxerRoomSerializer(serializers.ModelSerializer):
 
 
 class GroupBoxerSerializer(serializers.ModelSerializer):
-    boxer = BoxerRoomSerializer(read_only=True)
+    boxer = RoomBoxerSerializer(read_only=True)
 
     boxer_id = serializers.PrimaryKeyRelatedField(
         queryset=RoomBoxer.objects.all(),
