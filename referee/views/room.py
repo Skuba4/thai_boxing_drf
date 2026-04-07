@@ -170,9 +170,9 @@ class RoomApplicationView(ModelViewSet):
         room = Room.objects.get(uuid=self.kwargs["room_uuid"])
         application = RoomApplication.objects.get(room=room, user=request.user)
 
-        if application.status != RoomApplication.Status.WAIT:
+        if application.status == RoomApplication.Status.NO:
             return Response(
-                {"detail": "Заявка уже обработана."},
+                {"detail": "Вам отказано в участии."},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
