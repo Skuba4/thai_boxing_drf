@@ -58,6 +58,15 @@ class RoomBoxerViewSet(ModelViewSet):
     def get_queryset(self):
         return RoomBoxer.objects.filter(room__uuid=self.kwargs["room_uuid"])
 
+    @action(detail=False, methods=["get"])
+    def my_boxers(self, request, *args, **kwargs):
+        queryset = RoomBoxer.objects.filter(
+            room__uuid=self.kwargs["room_uuid"],
+            trainer=request.user,
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     @transaction.atomic
     def perform_destroy(self, instance):
         fight_ids = list(instance.fight_slots.values_list("fight_id", flat=True))

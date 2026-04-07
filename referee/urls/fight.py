@@ -13,6 +13,10 @@ router.register("boxers", BoxerViewSet)
 
 urlpatterns = router.urls + [
     path(
+        "room/<uuid:room_uuid>/my-boxers/",
+        RoomBoxerViewSet.as_view({"get": "my_boxers"}),
+    ),
+    path(
         "room/<uuid:room_uuid>/boxers/",
         RoomBoxerViewSet.as_view(
             {
