@@ -78,8 +78,7 @@ class RingSerializer(serializers.ModelSerializer):
 
 class StageSerializer(serializers.Serializer):
     boxer_ids = serializers.ListField(
-        child=serializers.UUIDField(),
-        allow_null=True,
+        child=serializers.UUIDField(allow_null=True),
     )
 
 
