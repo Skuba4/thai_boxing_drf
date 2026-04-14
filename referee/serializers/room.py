@@ -76,6 +76,13 @@ class RingSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "description", "room", "status")
 
 
+class StageSerializer(serializers.Serializer):
+    boxer_ids = serializers.PrimaryKeyRelatedField(
+        queryset=RoomBoxer.objects.all(),
+        many=True,
+    )
+
+
 class GroupSerializer(serializers.ModelSerializer):
     ring = RingSerializer(read_only=True)
     group_boxers = GroupBoxerSerializer(source="boxers", many=True, read_only=True)

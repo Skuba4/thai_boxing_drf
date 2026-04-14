@@ -42,6 +42,7 @@ urlpatterns = router.urls + [
         "room/<uuid:room_uuid>/group/<int:group_id>/",
         GroupViewSet.as_view(
             {
+                "post": "stage_create",
                 "get": "retrieve",
                 "patch": "partial_update",
                 "delete": "destroy",

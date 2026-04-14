@@ -16,6 +16,7 @@ from referee.serializers import (
     RoomSerializer,
     RoomApplicationDecisionSerializers,
     GroupSerializer,
+    StageSerializer,
 )
 from referee.services.boxers_room import (
     add_trainer_boxers_to_room,
@@ -103,6 +104,18 @@ class GroupViewSet(ModelViewSet):
         update_availability(boxers, True)
 
         instance.delete()
+
+    @action(
+        detail=True,
+        methods=["post"],
+        serializer_class=StageSerializer,
+    )
+    @transaction.atomic
+    def stage_create(self, request, *args, **kwargs):
+        serializer = StageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        print(serializer.validated_data)
 
 
 @extend_schema(
