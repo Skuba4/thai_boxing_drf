@@ -116,7 +116,7 @@ class GroupViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         print(serializer.validated_data)
-
+        return Response({"detail": "ok"})
 
 @extend_schema(
     tags=["Работа с заявками комнаты"],
