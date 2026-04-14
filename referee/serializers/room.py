@@ -77,9 +77,9 @@ class RingSerializer(serializers.ModelSerializer):
 
 
 class StageSerializer(serializers.Serializer):
-    boxer_ids = serializers.PrimaryKeyRelatedField(
-        queryset=RoomBoxer.objects.all(),
-        many=True,
+    boxer_ids = serializers.ListField(
+        child=serializers.UUIDField(),
+        allow_empty=True,
     )
 
 
