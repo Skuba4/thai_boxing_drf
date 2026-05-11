@@ -1,0 +1,24 @@
+services:
+  web:
+    build: .
+    container_name: thai_boxing_drf_backend
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: >
+      sh -c "python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000"
+
+  db:
+    image: postgres:15
+    container_name: thai_boxing_drf_db
+    env_file: .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
