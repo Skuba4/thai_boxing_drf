@@ -19,7 +19,7 @@ jobs:
         env:
           HOST: ${{ secrets.VPS_HOST }}
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ HOST }}"
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.HOST }}"
             cd /projects/thai_boxing/thai_boxing_drf/ &&
             git pull &&
             docker compose -f docker-compose.prod.yml up -d --build
