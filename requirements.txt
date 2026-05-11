@@ -12,6 +12,7 @@ djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 drf-spectacular==0.29.0
 executing==2.2.1
+gunicorn==26.0.0
 inflection==0.5.1
 ipython==9.9.0
 ipython_pygments_lexers==1.1.1
