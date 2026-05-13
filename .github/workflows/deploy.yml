@@ -17,7 +17,7 @@ jobs:
 
       - name: Deploy to VPS
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ vars.HOST }} "
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.HOST }} "
             cd /projects/thai_boxing/thai_boxing_drf/ &&
             git pull &&
             docker compose up -d --build
