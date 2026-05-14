@@ -364,7 +364,7 @@ class RoomBoxerViewSet(ModelViewSet):
     @transaction.atomic
     def perform_destroy(self, instance):
         """Ручное удаление всех зависимостей участника и дальнейшее удаление самого участника."""
-        delete_boxer_related_fights(instance)
+        # delete_boxer_related_fights(instance) ДОДЕЛАТЬ!
         instance.delete()
 
     @extend_schema(summary="Добавляем СВОИХ спортсменов в СВОЮ комнату соревнований.",
