@@ -521,9 +521,20 @@ class FightViewSet(ModelViewSet):
     @transaction.atomic
     def fight_status(self, request, *args, **kwargs):
         fight = self.get_object()
-        serializer = self.get_serializer(instance=fight, data=request.data, partial=True)
+        serializer = self.get_serializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save(status=serializer.validated_data.get("status"))
+
+        new_status = serializer.validated_data["status"]
+
+        if new_status == Fight.Status.ACTIVE:
+            Fight.objects.filter(
+                grid__ring=fight.grid.ring,
+                status=Fight.Status.ACTIVE,
+            ).exclude(pk=fight.pk).update(status=Fight.Status.INACTIVE)
+
+        fight.status = new_status
+        fight.save(update_fields=["status"])
+
         return Response({"detail": "Статус изменен."}, status=status.HTTP_200_OK)
 
     @extend_schema(summary="Сохранить порядок боев в ринге.")
